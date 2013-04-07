@@ -35,7 +35,10 @@ following attributes:
 * Installation
   If you are of the adventurous type you might want to try out the
   automatic and never-before tested install.sh, which does all -
-  except the last two: "import" and "done" - these below automagically.
+  except the last two: "import" and "done" - these below
+  automagically.  Otherwise you'll be setting up an onion service,
+  nginx, a CA and related certificates, importing some of them into
+  browsers and also configuring the stash.
 ** setup a tor hidden service (optional)
 If you don't need a hidden service (why not?), then later in the
 install replace all ports and the hostname with your own setup.
