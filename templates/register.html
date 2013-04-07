@@ -1,13 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
-You might want to download and install the <a href="http://{{hostname}}/cert.pem">Root CA cert</a> of this site.<br />
+You might want to download and install the <a href="/cert.pem">Root CA cert</a> of this site.<br />
 <div class="formRow">{{msg}}</div>
 <form method="POST" action="/settings/register/">
    <input type="hidden" name="csrf" value="{{csrf}}" />
-   <div class="formRow">Email address: <input type="text" name="email"></input></div>
-   <div class="formRow">Name: <input type="text" name="name"></input></div>
-   <div class="formRow"><keygen name="key" /></div>
-   <input type="submit" value="Go">
+   <table>
+      <tr>
+         <td>Email address</td>
+         <td><input type="text" name="email"></input></td>
+      </tr>
+      <tr>
+         <td>Name</td>
+         <td><input type="text" name="name"></input></td>
+      </tr>
+      <tr>
+         <td></td>
+         <td><keygen name="key" /></td>
+      </tr>
+      <tr>
+         <td></td>
+         <td><input type="submit" value="Go"></td>
+      </tr>
+   </table>
 </form>
-Please import the file offered into your browsers certificate store.
 {% endblock %}
