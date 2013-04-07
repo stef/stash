@@ -1,3 +1,4 @@
+uwsgi
 tlsauth
 PyRSS2Gen
 jinja2
