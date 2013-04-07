@@ -1,0 +1,4 @@
+[[register.png][registration]]
+[[request.png][submit a CSR]]
+[[stashes.png][admin sees stashes]]
+[[upload-ok.png][successful upload]]
