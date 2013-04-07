@@ -1,15 +1,15 @@
 * stash
 stash is a private dropbox.
 
-If you want someone to be able to upload files directly onto your
-computer at home, install stash once, and allow dedicated access to
-your friends to share files with you. Maybe your dad wants to send you
-the video from the family event, or a colleague a huge database, stash
-might be the right thing. If you run stash on the internet, your
-uploads are encrypted and only accessible with your secret PGP
-key. There's a short time when the file is unencrypted in memory (but
-not on disk!) on our server while uploading, but you can get around
-that uploading stuff that is already encrypted.
+If you want someone to be able to upload files from their browser
+directly onto your computer at home, install stash once, and allow
+dedicated access to your friends to share files with you. Maybe your
+dad wants to send you the video from the family event, or a colleague
+a huge database, stash might be the right thing. If you run stash on
+the internet, your uploads are encrypted and only accessible with your
+secret PGP key. There's a short time when the file is unencrypted in
+memory (but not on disk!) on our server while uploading, but you can
+get around that uploading stuff that is already encrypted.
 
 where's the screenshots? here: [[screenshots/]]
 
