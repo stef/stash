@@ -1,0 +1,63 @@
+body, p, div, ol, li,
+form, input, label {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #ffe073;
+    color: black;
+    font-family: "monospace";
+    font-size: 100%; /* 16px */
+}
+
+a {
+    color: #a61400;
+    font-weight: bold;
+    text-decoration: none;
+    text-decoration: underline;
+}
+
+form {
+    margin-bottom: 1em;
+}
+
+.form-row {
+    padding-bottom: 0.5em;
+}
+
+.form-row label {
+    font-weight: bold;
+    display: block;
+}
+
+input {
+    font-size: 1em;
+    padding: 0.2em;
+    margin-top: 0.25em;
+}
+
+.msg {
+   padding: 0.5em;
+   margin-bottom: 1em;
+   border: 1px solid #d5f800;
+   background-color: #a6a400;
+   color: white;
+}
+
+#progress_bar_container {
+    display: none;
+    border: 1px solid grey;
+    width: 400px;
+    height: 34px;
+}
+
+#progress_bar {
+    color: white;
+    width: 0;
+    height: 34px;
+    line-height: 34px;
+    padding-left: 8.5px; /* line-height / 4 */
+    background: url("/static/progress_bar.png") repeat-x;
+    background-color: blue;
+}

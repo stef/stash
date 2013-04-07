@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+You might want to download and install the <a href="/static/ca-cert.pem">Root CA cert</a> of this site.<br />
+<div class="formRow">{{msg}}</div>
+<form method="POST" action="/settings/newstash/">
+   <input type="hidden" name="csrf" value="{{csrf}}" />
+   <div class="formRow">Invite some people, one email per line: <textarea name="invited"></textarea></div>
+   {% if not knownkey %}
+   <div class="formRow">Your publicly available PGP keyid: <input type="text" name="keyid"></input></div>
+   <div class="formRow">Or your public PGP key: <textarea name="pk"></textarea></div>
+   {% endif %}
+   <div class="formRow">Stash id: <input type="text" name="name"></input> (optional)</div>
+   <input type="submit" value="Go">
+</form>
+Please import the file offered into your browsers certificate store.
+<p>You can always try if it works at <a href="/settings/test/">/settings/test/</a>.</p>
+{% endblock %}

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+     <title>{{ title }} - stash</title>
+     <link rel="stylesheet" href="/static/main.css" type="text/css" />
+  </head>
+  <body>
+     <div class="formRow">
+        <a href="/settings/register">register</a> | 
+        <a href="/settings/request">request</a> 
+        {% if isadmin %}
+        | <a href="/settings/requests">requests</a> |
+        <a href="/settings/newstash">new stash</a> | 
+        <a href="/settings/stashes">stashes</a> 
+        {% endif %}
+     </div>
+     {% if msg %}<div class="msg">{{msg}}</div>{% endif %}
+     {% block content %}
+     {% endblock %}
+  </body>
+</html>

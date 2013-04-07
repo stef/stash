@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<table>
+   <thead>
+      <tr>
+         <td>Name</td>
+         <td>Owner</td>
+         <td>Friends</td>
+         <td>Files</td>
+         <td>Actions</td>
+      </tr>
+   </thead>
+   <tbody>
+      {% for name, owner, friends, size, files in stashes %}
+      <tr>
+         <td><a href="/{{name}}/feed/">{{name}}</a></td>
+         <td>{% for o in owner %}{{o}}{% if not loop.last %}<br />{% endif %}{% endfor%}</td>
+         <td>{% for f in friends %}{{f}}{% if not loop.last %}<br />{% endif %}{% endfor %}</td>
+         <td>{{size}} / {{files}} files</td>
+         <td>
+            <a href="/{{name}}/">upload</a>
+            <a href="/settings/delete/{{name}}">delete</a>
+         </td>
+      </tr>
+      {% endfor %}
+   </tbody>
+</table>
+{% endblock %}

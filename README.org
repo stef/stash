@@ -1,0 +1,103 @@
+* Installation
+** setup a tor hidden service (optional)
+If you don't need a hidden service (why not?), then later in the
+install replace all ports and the hostname with your own setup.
+
+Create this hidden service in your /etc/tor/torrc file:
+#+BEGIN_SRC sh
+sudo cat >>/etc/tor/torrc <<EOT
+HiddenServiceDir /var/lib/tor/stash/
+HiddenServicePort 443 127.0.0.1:23443
+HiddenServicePort 80 127.0.0.1:23080
+EOT
+#+END_SRC
+then restart tor and get the hostname:
+#+BEGIN_SRC sh
+/etc/init.d/tor restart
+cat /var/lib/tor/stash/hostname
+#+END_SRC
+remember this hostname and use it in all later steps.
+** Get stash and dependencies
+#+BEGIN_SRC sh
+   git clone <stashurl>      
+   pip install -r requirements.txt
+#+END_SRC
+   After also installing the necessary dependencies, we can
+** Create a CA
+#+BEGIN_SRC sh
+   createca.sh CA https://hostname.onion/crl.pem
+#+END_SRC
+Here you can set the Country to empty by answering with a ".". For the
+Root CA organization name you can use "hostname.onion CA". For the
+common name you should provide again the hostname. You can provide an
+email address for any issues with your certificates.
+** Create a HTTPS server certificate
+#+BEGIN_SRC sh
+   servercert.sh CA/<hostname>
+   cd CA
+   signcert.sh <hostname>
+   mv <hostname>.key private
+   mv <hostname>.cert public
+   rm <hostname>.csr
+   cd -
+#+END_SRC
+** Setup nginx
+Adapt the path "/var/run/stash" and the hostname in stash.nginx.conf, then
+#+BEGIN_SRC sh
+cp stash.nginx.conf /etc/nginx/sites-available/stash
+ln -s /etc/nginx/sites-available/stash /etc/nginx/sites-enabled/
+/etc/init.d/nginx restart
+#+END_SRC
+** Create your own client certificate
+This step is like setting up the admin account on other systems:
+#+BEGIN_SRC sh
+   cd CA
+   gencert.sh <certfilename>
+   signcert.sh <certfilename>
+   cert2pkcs12.sh <certfilename>
+   rm <certfilename>.csr
+   cd -
+#+END_SRC
+Store the files ending in .key and .cert in some safe offline storage.
+** Configure stash
+edit cfg.py and set:
+ - 'sender' to some email address for the origin of mails sent by stash
+ - 'admins' is a list of emails, that when presentee a certificate with
+   an email in this list, the user will have admin privileges.
+ - 'secret' to some long random string
+ - 'root' to some path which will serve as root for all file operations.
+ - 'ca' to the directory containing your CA files under 'root'
+ - 'notify' to False if you don't want any notifications being sent out after uploads.
+** Start stash wsgi daemon
+#+BEGIN_SRC sh
+uwsgi --socket 127.0.0.1:23023 --chdir $PWD -pp $PWD/.. -w pydrop_wsgi -p 1 --py-auto-reload 1
+#+END_SRC
+** Importing certificates
+Open in your favorite browser the following url:
+http://<hostname>/cert.pem
+
+Which should offer you to automatically import the CA root certificate
+into your browsers, and it also asks you what you want to trust it,
+allow your browser to trust this CA with servers and user, but not
+software.
+
+Also download and import the .p12 certificate generated in "Create your own
+client Certificate" into your browser.
+** Done
+visit:
+ - To create a new stash: https://<hostname>/settings/newstash
+ - to list stashes: https://<hostname>/settings/stashes
+ - to list user access requests: https://<hostname>/settings/requests
+
+Your friends can now request access to your stash by going to:
+https://<hostname>/settings/register
+
+However this generates the certificate in your browser, and if you -
+as I - do not trust your browser, you might want to generate your keys
+and certs offline in a more controlled environment and upload your CSR
+here: https://<hostname>/settings/request
+
+Also my firefox did not store the generated key in the keystore, so i
+had to use a proper CSR anyway.
+
+

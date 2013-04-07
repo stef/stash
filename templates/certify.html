@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+You might want to download and install the <a href="/static/cert/">Root CA cert</a> of this site.<br />
+<h1>Send request</h1>
+<div class="formRow">{{msg}}</div>
+<form method="POST" action="/settings/request/">
+   <input type="hidden" name="csrf" value="{{csrf}}" />
+   CSR
+   <textarea name="csr"></textarea>
+   <input type="submit" value="Go">
+</form>
+You can always try if it works at <a href="/settings/test/">/tlsauth/test/</a>.
+{% endblock %}

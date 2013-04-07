@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<table>
+   <thead>
+      <tr>
+         <td>User</td>
+         <td>Email</td>
+         <td>Org</td>
+         <td>Date</td>
+         <td>Sign</td>
+         <td>Reject</td>
+      </tr>
+   </thead>
+   <tbody>
+      {% for item, date, id in certs %}
+      <tr>
+         <td>{{item.CN}}</td>
+         <td>{{item.emailAddress}}</td>
+         <td>{{item.O}}</td>
+         <td>{{date}}</td>
+         <td><a href="/settings/accept/{{id}}">sign</a></td>
+         <td><a href="/settings/reject/{{id}}">reject</a></td>
+      </tr>
+      {% endfor %}
+   </tbody>
+</table>
+{% endblock %}

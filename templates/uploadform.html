@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+  <form id="upload_form"
+        enctype="multipart/form-data"
+        method="POST"
+        action="?X-Progress-ID={{jobid}}">
+
+    <input type="hidden" id="file_id" name="X-Progress-ID" value="{{jobid}}"/>
+    <input type="hidden" name="csrf" value="{{csrf}}" />
+    <div class="formRow">
+      Disable Encryption <input type="checkbox" name="crypt" />
+    </div>
+    <div class="formRow">
+      <input type="file" name="file"/>
+    </div>
+    <div class="formRow">
+      <input type="submit" value="Upload"/>
+    </div>
+  </form>
+
+  <div id="progress_bar_container">
+    <div id="progress_bar"></div>
+  </div>
+
+  <div id="eta"></div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="/static/upload.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      init_upload_form();
+    });
+  </script>
+{% endblock %}

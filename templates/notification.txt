@@ -1,0 +1,6 @@
+Hey!
+
+{{sender}} has uploaded a {{size}} big file: {{name}} ({{type}})
+its sha256 hash is {{hash}}
+
+Get it from here: {{url}}
