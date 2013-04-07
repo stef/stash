@@ -1,6 +1,41 @@
+* stash
+stash is a private dropbox.
+
+If you want someone to be able to upload files directly onto your
+computer at home, install stash once, and allow dedicated access to
+your friends to share files with you. Maybe your dad wants to send you
+the video from the family event, or a colleague a huge database, stash
+might be the right thing. If you run stash on the internet, your
+uploads are encrypted and only accessible with your secret PGP
+key. There's a short time when the file is unencrypted in memory (but
+not on disk!) on our server while uploading, but you can get around
+that uploading stuff that is already encrypted.
+
+where's the screenshots? here: [[screenshots/]]
+
+stash should be easy to use for uploaders, while providing the
+following attributes:
+ - the only private information retained is the public PGP keys of the
+   stash owners. No passwords even. Just make an extra PGP key and
+   email for an added anon factor.
+ - uploaded files are automatically encrypted with the stash owners
+   key. This can be disabled, if you want to upload data that is
+   already encrypted.
+ - stash owners are automatically emailed about new uploads. These
+   emails are encrypted with their public PGP keys
+ - user authentication is done using [[https://github.com/stef/tlsauth/][tlsauth]]: uploaders do not need a
+   cert, new stash owners registering either, but all other parts
+   require valid certs.
+ - stash IDs are generated randomly and should be hard to guess, this
+   the only protection - tlsauth does not protect these upload forms -
+   this is intentional to make it useful for "mom". however you can
+   also specify your own human parseable stash ID if needed, tlsauth
+   should be mandatory then for uploads as well.
+
 * Installation
-  If you are of the adventurous type you might want to try out the automatic and never-before tested
-  install.sh, which does all these below automagically.
+  If you are of the adventurous type you might want to try out the
+  automatic and never-before tested install.sh, which does all -
+  except the last two: "import" and "done" - these below automagically.
 ** setup a tor hidden service (optional)
 If you don't need a hidden service (why not?), then later in the
 install replace all ports and the hostname with your own setup.
