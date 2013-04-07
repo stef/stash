@@ -20,6 +20,7 @@ remember this hostname and use it in all later steps.
 ** Get stash and dependencies
 #+BEGIN_SRC sh
    git clone https://github.com/stef/stash
+   cd stash
    pip install -r requirements.txt
 #+END_SRC
    After also installing the necessary dependencies, we can
