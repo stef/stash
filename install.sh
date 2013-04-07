@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#### WARNING : very experimental, never tested.
+## if it works pls tell me, so i can remove this warning.
+
 echo "we'll need your email address for your CA, server and admin cert."
 read email
 echo "also we need a username for your admin cert"
