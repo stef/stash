@@ -333,19 +333,19 @@ class AdminHandler(object):
         """
         if self.action == 'newstash':
             return self.newstash()
-        if self.action == 'register':
+        elif self.action == 'register':
             return self.register()
-        if self.action == 'request':
+        elif self.action == 'request':
             return self.submitcsr()
-        if self.action == 'requests':
+        elif self.action == 'requests':
             return self.showcsrs()
-        if self.action == 'accept':
+        elif self.action == 'accept':
             return self.accept()
-        if self.action == 'reject':
+        elif self.action == 'reject':
             return self.reject()
-        if self.action == 'stashes':
+        elif self.action == 'stashes':
             return self.stashes()
-        if self.action == 'delete':
+        elif self.action == 'delete':
             return self.delete()
         return _404(self.environ,self.resp)
 
@@ -621,7 +621,6 @@ def getcsrf():
 
 def application(environ, start_response):
     if environ.get('REQUEST_URI').startswith('/settings/'):
-        handler=AdminHandler(environ, start_response)
         try:
             handler=AdminHandler(environ, start_response)
         except:
