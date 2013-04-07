@@ -19,7 +19,7 @@ cat /var/lib/tor/stash/hostname
 remember this hostname and use it in all later steps.
 ** Get stash and dependencies
 #+BEGIN_SRC sh
-   git clone <stashurl>      
+   git clone https://github.com/stef/stash
    pip install -r requirements.txt
 #+END_SRC
    After also installing the necessary dependencies, we can
@@ -28,9 +28,20 @@ remember this hostname and use it in all later steps.
    createca.sh CA https://hostname.onion/crl.pem
 #+END_SRC
 Here you can set the Country to empty by answering with a ".". For the
-Root CA organization name you can use "hostname.onion CA". For the
+Root CA organization name you can use "hostname CA". For the
 common name you should provide again the hostname. You can provide an
 email address for any issues with your certificates.
+
+#+BEGIN_SRC sh
+cat >CA/ca.cfg <<EOT
+crl=https://<hostname>/crl.pem
+sec=private/root.pem
+pub=public/root.pem
+serial=conf/serial
+incoming=incoming
+EOT
+#+END_SRC
+
 ** Create a HTTPS server certificate
 #+BEGIN_SRC sh
    servercert.sh CA/<hostname>
@@ -62,7 +73,7 @@ Store the files ending in .key and .cert in some safe offline storage.
 ** Configure stash
 edit cfg.py and set:
  - 'sender' to some email address for the origin of mails sent by stash
- - 'admins' is a list of emails, that when presentee a certificate with
+ - 'admins' is a list of emails, that when presented a certificate with
    an email in this list, the user will have admin privileges.
  - 'secret' to some long random string
  - 'root' to some path which will serve as root for all file operations.
@@ -70,7 +81,7 @@ edit cfg.py and set:
  - 'notify' to False if you don't want any notifications being sent out after uploads.
 ** Start stash wsgi daemon
 #+BEGIN_SRC sh
-uwsgi --socket 127.0.0.1:23023 --chdir $PWD -pp $PWD/.. -w pydrop_wsgi -p 1 --py-auto-reload 1
+uwsgi --socket 127.0.0.1:23023 --chdir $PWD -pp $PWD/.. -w stash -p 1 --py-auto-reload 1
 #+END_SRC
 ** Importing certificates
 Open in your favorite browser the following url:
