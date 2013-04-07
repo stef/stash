@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# todo use tlsauth.py instead of the tlsauth shell scripts.
-# ask for the email and username once, instead of asking again later.
+echo "we'll need your email address for your CA, server and admin cert."
+read email
+echo "also we need a username for your admin cert"
+read name
 
 # create hidden service
 echo adding hidden service
@@ -21,7 +23,8 @@ pip install -r requirements.txt
 
 # create local CA
 echo creating local CA
-createca.sh CA https://$hostname/crl.pem
+#createca.sh CA https://$hostname/crl.pem
+tlsauth.py CA createca http://$hostname/crl.pem "$hostname CA" $email
 cat >CA/ca.cfg <<EOT
 crl=https://$hostname/crl.pem
 sec=private/root.pem
@@ -32,18 +35,23 @@ EOT
 
 # generate server cert
 echo generating server cert
-servercert.sh CA/$hostname
-cd CA
-signcert.sh $hostname
-mv $hostname.key private
-mv $hostname.cert public
-rm $hostname.csr
+#servercert.sh CA/$hostname
+tlsauth.py CA newcsr $hostname $email >CA/server.key
+#cd CA
+#signcert.sh $hostname
+tlsauth.py CA sign <CA/server.key >CA/server.cert
+mv CA/$hostname.key CA/private
+mv CA/$hostname.cert CA/public
+rm CA/$hostname.csr
 
 # generate admin cert
 echo generate admin cert
-gencert.sh admin
-signcert.sh admin
-cert2pkcs12.sh admin
+tlsauth.py CA newcsr $name $email >CA/admin.key
+tlsauth.py CA sign <CA/admin.key >CA/admin.cert
+tlsauth.py CA p12 CA/admin.key <CA/admin.cert >CA/admin.p12
+#gencert.sh admin
+#signcert.sh admin
+#cert2pkcs12.sh admin
 rm admin.csr
 
 # generate nginx config
@@ -101,13 +109,11 @@ sudo ln -s /etc/nginx/sites-available/stash /etc/nginx/sites-enabled/
 sudo /etc/init.d/nginx restart
 
 echo generating stash config
-echo pls repeat the email address you specified in the user cert
-read mail
 cat >cfg.py <<EOF
 import os
 
 CONFIG={
-        'admins':['$mail'],
+        'admins':['$email'],
         'secret':'$(openssl rand -hex 48)',
         'ca': 'CA',
         'sender':'stash@$hostname',
