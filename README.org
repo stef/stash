@@ -1,4 +1,6 @@
 * Installation
+  If you are of the adventurous type you might want to try out the automatic and never-before tested
+  install.sh, which does all these below automagically.
 ** setup a tor hidden service (optional)
 If you don't need a hidden service (why not?), then later in the
 install replace all ports and the hostname with your own setup.
