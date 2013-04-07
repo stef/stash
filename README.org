@@ -15,6 +15,7 @@ where's the screenshots? here: [[screenshots/]]
 
 stash should be easy to use for uploaders, while providing the
 following attributes:
+ - allow upload of huge files (i know, it's HTTP, still).
  - the only private information retained is the public PGP keys of the
    stash owners. No passwords even. Just make an extra PGP key and
    email for an added anon factor.
