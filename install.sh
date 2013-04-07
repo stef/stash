@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# todo use tlsauth.py instead of the tlsauth shell scripts.
+# ask for the email and username once, instead of asking again later.
+
 # create hidden service
 echo adding hidden service
 sudo cat >>/etc/tor/torrc <<EOT
