@@ -31,6 +31,10 @@ following attributes:
    this is intentional to make it useful for "mom". however you can
    also specify your own human parseable stash ID if needed, tlsauth
    should be mandatory then for uploads as well.
+ - even though stash uses certificates for authentication, the user
+   management is very simple and similar to normal user admin
+   workflows, the only difference is that users have to import their
+   cert into their browser after certification.
 
 * Installation
   If you are of the adventurous type you might want to try out the
@@ -39,9 +43,11 @@ following attributes:
   automagically.  Otherwise you'll be setting up an onion service,
   nginx, a CA and related certificates, importing some of them into
   browsers and also configuring the stash.
-** setup a tor hidden service (optional)
-If you don't need a hidden service (why not?), then later in the
-install replace all ports and the hostname with your own setup.
+** Depends
+   tlsauth, nginx
+** Setup a tor hidden service
+If you don't need a hidden service (why not? - it's nice to go behind
+NAT), then you can skip this, but the install script does it anyway.
 
 Create this hidden service in your /etc/tor/torrc file:
 #+BEGIN_SRC sh
