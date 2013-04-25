@@ -320,7 +320,7 @@ class AdminHandler(object):
         /settings/reject/<certhash>  - reject a new user request (admin only)
     """
     def __init__(self,environ, start_response):
-        self.ca=CertAuthority('x509-ca')
+        self.ca=CertAuthority(CONFIG['ca'])
         self.environ=environ
         self.resp=start_response
         self.action = self.environ.get('REQUEST_URI').split('/')[2]
@@ -393,7 +393,7 @@ class AdminHandler(object):
                 if not csrf(params):
                     msg="Try again from our fine server please."
                 elif params.get('csr'):
-                    ca=CertAuthority('x509-ca')
+                    ca=CertAuthority(CONFIG['ca'])
                     tmp=params['csr'].split('\n')
                     csr='\n'.join([urllib.unquote_plus(tmp[0]),
                                    '\n'.join(tmp[1:-1]),
