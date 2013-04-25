@@ -30,7 +30,7 @@ class Dropper(object):
     def loadstash(self):
         """ loads an upload directory configuration
         """
-        with open(BASEPATH+'/drop/'+self.stashid+'.cfg','r') as fd:
+        with open(CONFIG['root']+'/drop/'+self.stashid+'.cfg','r') as fd:
             recipients=fd.readline().split()
             users=[x.strip() for x in fd.readlines()]
         return recipients, users
