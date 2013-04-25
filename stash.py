@@ -247,7 +247,7 @@ class PostUploadParser(object):
                         '',
                         ''))
         if CONFIG.get('notify'):
-            sender=(todn(self.dropper.environ.get('dn'),'')['emailAddress']
+            sender=(todn(self.dropper.environ.get('dn',''))['emailAddress']
                     if todn(self.dropper.environ.get('dn','')).get('emailAddress')
                     else "anon@localhost")
             txt = render_template('notification.txt',
