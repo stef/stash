@@ -2,3 +2,6 @@ uwsgi
 tlsauth
 PyRSS2Gen
 jinja2
+m2crypto
+pyopenssl
+python-gnupg
