@@ -62,8 +62,8 @@ EOT
 #+END_SRC
 then restart tor and get the hostname:
 #+BEGIN_SRC sh
-/etc/init.d/tor restart
-cat /var/lib/tor/stash/hostname
+sudo /etc/init.d/tor restart
+sudo cat /var/lib/tor/stash/hostname
 #+END_SRC
 remember this hostname and use it in all later steps.
 ** Get stash and dependencies
