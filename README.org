@@ -73,35 +73,34 @@ remember this hostname and use it in all later steps.
    pip install -r requirements.txt
 #+END_SRC
    After also installing the necessary dependencies, we can
-** Create a CA
-#+BEGIN_SRC sh
-   createca.sh CA https://hostname.onion/crl.pem
-#+END_SRC
-Here you can set the Country to empty by answering with a ".". For the
-Root CA organization name you can use "hostname CA". For the
-common name you should provide again the hostname. You can provide an
-email address for any issues with your certificates.
-
-#+BEGIN_SRC sh
-cat >CA/ca.cfg <<EOT
-crl=https://<hostname>/crl.pem
-sec=private/root.pem
-pub=public/root.pem
-serial=conf/serial
-incoming=incoming
-EOT
-#+END_SRC
-
-** Create a HTTPS server certificate
-#+BEGIN_SRC sh
-   servercert.sh CA/<hostname>
-   cd CA
-   signcert.sh <hostname>
-   mv <hostname>.key private
-   mv <hostname>.cert public
-   rm <hostname>.csr
-   cd -
-#+END_SRC
+** Create the CAs
+*** create a Root CA
+    ...for signing the https server certificate and the subCA.
+    #+BEGIN_SRC sh
+./tlsauth.py CA createca http://<hostname>/crl.pem "<hostname> CA" email1@<hostname>
+    #+END_SRC
+*** create a subCA
+    ...for the client auth keys
+    #+BEGIN_SRC sh
+./tlsauth.py subCA createca http://<hostname>/client-crl.pem "<hostname> client CA" email@<hostname> CA
+    #+END_SRC
+*** create https server certificate
+    #+BEGIN_SRC sh
+./tlsauth.py CA newcsr <hostname> root@<hostname> >CA/server.key
+    #+END_SRC
+*** Sign server cert with Root CA
+    #+BEGIN_SRC sh
+./tlsauth.py CA sign <CA/server.key >CA/public/server.pem
+    #+END_SRC
+*** Remove Root CA private key
+It is important to remove and store the root CA private key in a safe
+offline location, as it can be used to mount a MITM attack against all
+users, who trust this key. You need this key in 1 year, when you need
+to renew your client CA certificate (per default it's only valid for
+one year!)
+    #+BEGIN_SRC sh
+mv root-ca/private/root.key <private and save location>
+    #+END_SRC
 ** Setup nginx
 Adapt the path "/var/run/stash" and the hostname in stash.nginx.conf, then
 #+BEGIN_SRC sh
@@ -112,12 +111,9 @@ ln -s /etc/nginx/sites-available/stash /etc/nginx/sites-enabled/
 ** Create your own client certificate
 This step is like setting up the admin account on other systems:
 #+BEGIN_SRC sh
-   cd CA
-   gencert.sh <certfilename>
-   signcert.sh <certfilename>
-   cert2pkcs12.sh <certfilename>
-   rm <certfilename>.csr
-   cd -
+./tlsauth.py subCA newcsr joe joe@localhost >joe.key
+./tlsauth.py subCA sign <joe.key >joe.cert
+./tlsauth.py root-ca p12 joe.key <joe.cert >joe.p12
 #+END_SRC
 Store the files ending in .key and .cert in some safe offline storage.
 ** Configure stash

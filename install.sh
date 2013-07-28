@@ -3,64 +3,65 @@
 #### WARNING : very experimental, never tested.
 ## if it works pls tell me, so i can remove this warning.
 
-echo "we'll need your email address for your CA, server and admin cert."
+dry=True
+
+echo "be careful, backup your /etc/tor/torrc"
+echo "before you continue, otherwise abort with ctrl-c"
+read
+echo "ok. we'll need your email address for your CA, server and admin cert."
 read email
-echo "also we need a username for your admin cert"
+echo "cool. also we need a username for your admin cert"
 read name
 
 # create hidden service
-echo adding hidden service
-sudo cat >>/etc/tor/torrc <<EOT
+dry || {
+    echo "adding hidden service"
+    sudo cat >>/etc/tor/torrc <<EOT
 HiddenServiceDir /var/lib/tor/stash/
 HiddenServicePort 443 127.0.0.1:23443
 HiddenServicePort 80 127.0.0.1:23080
 EOT
-sudo /etc/init.d/tor restart
-hostname=$(sudo cat /var/lib/tor/stash/hostname)
+    sudo /etc/init.d/tor restart
+    hostname=$(sudo cat /var/lib/tor/stash/hostname)
+}
 
 # install stash
 echo installing stash
 git clone https://github.com/stef/stash
 cd stash
+virtualenv env
+source env/bin/activate
 pip install -r requirements.txt
 
 # create local CA
 echo creating local CA
-#createca.sh CA https://$hostname/crl.pem
 tlsauth.py CA createca http://$hostname/crl.pem "$hostname CA" $email
-cat >CA/ca.cfg <<EOT
-crl=https://$hostname/crl.pem
-sec=private/root.pem
-pub=public/root.pem
-serial=conf/serial
-incoming=incoming
-EOT
 
 # generate server cert
 echo generating server cert
-#servercert.sh CA/$hostname
-tlsauth.py CA newcsr $hostname $email >CA/server.key
-#cd CA
-#signcert.sh $hostname
-tlsauth.py CA sign <CA/server.key >CA/server.cert
-mv CA/$hostname.key CA/private
-mv CA/$hostname.cert CA/public
-rm CA/$hostname.csr
+tlsauth.py CA newcsr $hostname $email >CA/"${hostname}".key
+tlsauth.py CA sign <CA/server.key >CA/"${hostname"}.cert
+
+# create local client CA
+echo creating local client CA
+tlsauth.py subCA createca http://$hostname/client-crl.pem "$hostname client CA" $email
+
+# deleting master CA key here!!!! you need it in one year when the subCA expires!
+echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+echo "rm CA/private/root.pem"
+echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
 
 # generate admin cert
 echo generate admin cert
-tlsauth.py CA newcsr $name $email >CA/admin.key
-tlsauth.py CA sign <CA/admin.key >CA/admin.cert
-tlsauth.py CA p12 CA/admin.key <CA/admin.cert >CA/admin.p12
-#gencert.sh admin
-#signcert.sh admin
-#cert2pkcs12.sh admin
-rm admin.csr
+tlsauth.py subCA newcsr $name $email >CA/admin.key
+tlsauth.py subCA sign <CA/admin.key >CA/admin.cert
+tlsauth.py subCA p12 CA/admin.key <CA/admin.cert >CA/admin.p12
 
 # generate nginx config
-echo generate nginx config
-basepath=$(realpath .)
-sudo cat >/etc/nginx/sites-available/stash <<EOF
+dry || {
+    echo generate nginx config
+    basepath=$(realpath .)
+    sudo cat >/etc/nginx/sites-available/stash <<EOF
 # change /var/run/stash into wherever your stash instance is located
 
 server {
@@ -79,9 +80,9 @@ server {
      server_name $hostname;
 
      ssl on;
-     ssl_certificate      $basepath/CA/public/$hostname.cert;
-     ssl_certificate_key  $basepath/CA/private/$hostname.key;
-     ssl_client_certificate $basepath/CA/public/root.pem;
+     ssl_certificate      $basepath/CA/$hostname.cert;
+     ssl_certificate_key  $basepath/CA/$hostname.key;
+     ssl_client_certificate $basepath/subCA/public/root.pem;
      ssl_verify_client optional;
 
      location /static/ {
@@ -108,17 +109,18 @@ server {
      }
 }
 EOF
-sudo ln -s /etc/nginx/sites-available/stash /etc/nginx/sites-enabled/
-sudo /etc/init.d/nginx restart
+    sudo ln -s /etc/nginx/sites-available/stash /etc/nginx/sites-enabled/
+    sudo /etc/init.d/nginx restart
 
-echo generating stash config
-cat >cfg.py <<EOF
+    echo generating stash config
+    cat >cfg.py <<EOF
 import os
 
 CONFIG={
         'admins':['$email'],
         'secret':'$(openssl rand -hex 48)',
         'ca': 'CA',
+        'subca': 'subCA',
         'sender':'stash@$hostname',
         'notify':True,
         'gpghome':'.gnupg',
